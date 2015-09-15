@@ -80,6 +80,7 @@ func main() {
 				continue
 			}
 
+			// говнокодищще!!
 			switch uint8(playload[4]) {
 
 			case 3:
