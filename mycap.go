@@ -14,6 +14,7 @@ import (
 
 var (
 	device        = flag.String("device", "lo", "")
+	guiPath       = flag.String("gui", "./gui", "")
 	BPFFilter     = flag.String("bpf_filter", "tcp and port 3306", "")
 	queryFilter   = flag.String("query_filter", "", "not case-sensitive")
 	slowQueryTime = flag.Int64("slow_query_time", 0, "in milliseconds")
@@ -29,6 +30,8 @@ type query struct {
 func main() {
 
 	flag.Parse()
+
+	gui.InitGui(*guiPath)
 
 	handle, err := pcap.OpenLive(*device, int32(*maxQueryLen)+5, true, time.Second)
 
@@ -100,11 +103,10 @@ func main() {
 					queryTime := packet.Metadata().Timestamp.Sub(query.start)
 
 					if *slowQueryTime == 0 || queryTime.Nanoseconds() > *slowQueryTime*1000000 {
-
-						fmt.Printf("-[ QUERY %f s]-:\n%s\n\n\n", queryTime.Seconds(), query.query)
+						gui.AllQueries.Add(query.query, query.start, queryTime)
+						// fmt.Printf("-[ QUERY %f s]-:\n%s\n\n\n", queryTime.Seconds(), query.query)
 					}
 
-					gui.AllQueries.Add(query.query, query.start, queryTime)
 					delete(queries, from)
 				}
 			}
