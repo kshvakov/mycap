@@ -1,0 +1,19 @@
+{{define "view/queries/top-by-count"}}
+<table class="table table-default table-bordered">
+	<captoin>TOP-5 of queries</captoin>
+	<thead>
+		<tr>
+			<th>Count</th>
+			<th>Query</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{ range $key, $query := .queries }}
+		<tr>
+			<td>{{$query.Count}}</td>
+			<td>{{$query.Query}}</td>
+		</tr>
+		{{ end }}
+	</tbody>
+</table>
+{{end}}

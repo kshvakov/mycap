@@ -1,0 +1,25 @@
+{{define "view/queries/all"}}
+<table class="table table-default table-bordered table-condensed table-sortable">
+	<captoin>ALL queries</captoin>
+	<thead>
+		<tr>
+			<th>Min</th>
+			<th>Max</th>
+			<th>AVG</th>
+			<th>Count</th>
+			<th>Query</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{ range $key, $query := .queries }}
+		<tr>
+			<td>{{$query.Min}}</td>
+			<td>{{$query.Max}}</td>
+			<td>{{$query.Avg}}</td>
+			<td>{{$query.Count}}</td>
+			<td>{{$query.Query}}</td>
+		</tr>
+		{{ end }}
+	</tbody>
+</table>
+{{end}}

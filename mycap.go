@@ -8,6 +8,7 @@ import (
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 	"log"
+	"mycap/gui"
 	"time"
 )
 
@@ -103,6 +104,7 @@ func main() {
 						fmt.Printf("-[ QUERY %f s]-:\n%s\n\n\n", queryTime.Seconds(), query.query)
 					}
 
+					gui.AllQueries.Add(query.query, query.start, queryTime)
 					delete(queries, from)
 				}
 			}
