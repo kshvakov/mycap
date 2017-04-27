@@ -8,9 +8,16 @@ import (
 
 type Queries map[string]Query
 
-func (self *Queries) Add(query string, start time.Time, duration time.Duration) {
+func (self *Queries) Add(from string, to string, query string, start time.Time, duration time.Duration) {
+	if len(query) < 1 {
+		// fucked empty queryies :|
+		return
+	}
+
 	q := Query{
 		Query: query,
+		From:  from,
+		To:    to,
 		Avg:   duration,
 		Min:   duration,
 		Max:   duration,
@@ -28,17 +35,19 @@ func (self *Queries) Add(query string, start time.Time, duration time.Duration) 
 			exists.Max = duration
 		}
 		(*self)[q.GetHash()] = exists
-		TopByAvg.Add(query, exists.Avg)
-		TopByCount.Add(query, exists.Count)
+		TopByAvg.Add(exists)
+		TopByCount.Add(exists)
 	} else {
 		(*self)[q.GetHash()] = q
-		TopByAvg.Add(query, q.Avg)
-		TopByCount.Add(query, q.Count)
+		TopByAvg.Add(q)
+		TopByCount.Add(q)
 	}
 }
 
 type Query struct {
 	Query string
+	From  string
+	To    string
 	Hash  string
 	Avg   time.Duration
 	Min   time.Duration
@@ -53,6 +62,8 @@ func (q Query) GetQuery() string {
 func (q *Query) CalcHash() {
 	h := md5.New()
 	io.WriteString(h, q.Query)
+	io.WriteString(h, q.From)
+	io.WriteString(h, q.To)
 	q.Hash = string(h.Sum(nil))
 }
 

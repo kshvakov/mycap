@@ -18,7 +18,7 @@ var (
 	BPFFilter     = flag.String("bpf_filter", "tcp and port 3306", "")
 	queryFilter   = flag.String("query_filter", "", "not case-sensitive")
 	slowQueryTime = flag.Int64("slow_query_time", 0, "in milliseconds")
-	maxQueryLen   = flag.Int("max_query_len", 2048, "")
+	maxQueryLen   = flag.Int("max_query_len", 9192, "")
 	queries       = make(map[string]query)
 )
 
@@ -57,60 +57,63 @@ func main() {
 		if applicationLayer := packet.ApplicationLayer(); applicationLayer != nil {
 
 			if ipLayer, ok = packet.Layer(layers.LayerTypeIPv4).(*layers.IPv4); !ok {
-
 				continue
 			}
 
 			if tcpLayer, ok = packet.Layer(layers.LayerTypeTCP).(*layers.TCP); !ok {
-
 				continue
 			}
 
 			playload := applicationLayer.Payload()
 
 			if len(playload) < 5 {
-
 				continue
 			}
 
 			length := int(playload[0]) | int(playload[1])<<8 | int(playload[2])<<16
 
 			if length > len(playload)-4 {
-
 				continue
 			}
 
-			// говнокодищще!!
-			switch uint8(playload[4]) {
+			// is request
+			if uint8(playload[4]) == 3 {
 
-			case 3:
+				isAllowedByFilter := *queryFilter == "" || bytes.Contains(bytes.ToLower(playload[5:length+4]), bytes.ToLower([]byte(*queryFilter)))
 
-				from := fmt.Sprintf("%s%d:%s%d\n", ipLayer.SrcIP, tcpLayer.SrcPort, ipLayer.DstIP, tcpLayer.DstPort)
-
-				if *queryFilter == "" || bytes.Contains(bytes.ToLower(playload[5:length+4]), bytes.ToLower([]byte(*queryFilter))) {
-
-					queries[from] = query{
+				if isAllowedByFilter {
+					qkey := fmt.Sprintf("%s%d:%s%d\n", ipLayer.SrcIP, tcpLayer.SrcPort, ipLayer.DstIP, tcpLayer.DstPort)
+					queries[qkey] = query{
 						query: string(playload[5 : length+4]),
 						start: packet.Metadata().Timestamp,
 					}
 				}
+			} else { // is response
 
-			default:
+				qkey := fmt.Sprintf("%s%d:%s%d\n", ipLayer.DstIP, tcpLayer.DstPort, ipLayer.SrcIP, tcpLayer.SrcPort)
 
-				from := fmt.Sprintf("%s%d:%s%d\n", ipLayer.DstIP, tcpLayer.DstPort, ipLayer.SrcIP, tcpLayer.SrcPort)
-
-				if query, found := queries[from]; found {
+				if query, found := queries[qkey]; found {
 
 					queryTime := packet.Metadata().Timestamp.Sub(query.start)
 
 					if *slowQueryTime == 0 || queryTime.Nanoseconds() > *slowQueryTime*1000000 {
-						gui.AllQueries.Add(query.query, query.start, queryTime)
+						gui.AllQueries.Add(
+							// from IP
+							fmt.Sprintf("%s", ipLayer.DstIP),
+							// fmt.Sprintf("%s:%d", ipLayer.DstIP, tcpLayer.DstPort),
+							// to IP:port
+							fmt.Sprintf("%s:%d", ipLayer.SrcIP, tcpLayer.SrcPort),
+							query.query,
+							query.start,
+							queryTime,
+						)
 						// fmt.Printf("-[ QUERY %f s]-:\n%s\n\n\n", queryTime.Seconds(), query.query)
 					}
 
-					delete(queries, from)
+					delete(queries, qkey)
 				}
 			}
+
 		}
 	}
 }
