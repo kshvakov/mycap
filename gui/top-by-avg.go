@@ -2,10 +2,11 @@ package gui
 
 import (
 	"sort"
-	"time"
 )
 
-type TopByAvgQueries []TopByAvgQuery
+const MAX_BY_AVG = 30
+
+type TopByAvgQueries []Query
 
 func (self *TopByAvgQueries) SortAsc() {
 	sort.Sort(self)
@@ -15,21 +16,15 @@ func (self *TopByAvgQueries) SortDesc() {
 	sort.Sort(sort.Reverse(self))
 }
 
-func (self *TopByAvgQueries) Add(query string, avg time.Duration) {
-	if i := self.FindByQuery(query); i != -1 {
-		(*self)[i].Avg = avg
-	} else if len(*self) < 5 {
-		(*self) = append((*self), TopByAvgQuery{
-			Query: query,
-			Avg:   avg,
-		})
+func (self *TopByAvgQueries) Add(q Query) {
+	if i := self.FindByQuery(q); i != -1 {
+		(*self)[i].Avg = q.Avg
+	} else if len(*self) < MAX_BY_AVG {
+		(*self) = append((*self), q)
 	} else {
 		self.SortAsc()
-		if (*self)[0].Avg < avg {
-			(*self)[0] = TopByAvgQuery{
-				Query: query,
-				Avg:   avg,
-			}
+		if (*self)[0].Avg < q.Avg {
+			(*self)[0] = q
 		}
 	}
 }
@@ -46,16 +41,11 @@ func (self TopByAvgQueries) Swap(i, j int) {
 	self[i], self[j] = self[j], self[i]
 }
 
-func (self TopByAvgQueries) FindByQuery(query string) (res int) {
+func (self TopByAvgQueries) FindByQuery(fnd Query) (res int) {
 	for res, q := range self {
-		if q.Query == query {
+		if q.Hash == fnd.Hash {
 			return res
 		}
 	}
 	return -1
-}
-
-type TopByAvgQuery struct {
-	Query string
-	Avg   time.Duration
 }
