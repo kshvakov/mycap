@@ -1,0 +1,22 @@
+{{define "view/nodes/all"}}
+<table class="table table-striped table-bordered table-hover dataTable no-footer" role="grid">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Host:Port</th>
+			<th>LastCheckTime</th>
+			<th>LastCheckState</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{ range $key, $node := .nodes }}
+		<tr>
+			<td>{{$node.Id}}</td>
+			<td>{{$node.Service.Host}}:{{$node.Service.Port}}</td>
+			<td>{{$node.LastCheckTime}}</td>
+			<td>{{$node.LastCheckState}}</td>
+		</tr>
+		{{ end }}
+	</tbody>
+</table>
+{{end}}

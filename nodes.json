@@ -1,0 +1,16 @@
+[
+  {
+    "id" : "localhost.9501.SELECT",
+    "service" : {
+      "host": "localhost",
+      "port": 9501
+    }
+  },
+  {
+    "id" : "localhost.9501.UPDATE",
+    "service" : {
+      "host": "localhost",
+      "port": 9502
+    }
+  }
+]
