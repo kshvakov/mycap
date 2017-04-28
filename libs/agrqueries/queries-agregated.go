@@ -1,0 +1,36 @@
+package agrqueries
+
+type QueriesAgregated struct {
+	Queries Queries
+	TopAvg  QueriesTopByAvg
+	TopCnt  QueriesTopByCount
+}
+
+func (self *QueriesAgregated) Add(query Query) {
+	if len(query.Query) < 1 {
+		return
+	}
+
+	if pos := self.Queries.Find(query); pos > -1 {
+		exists := self.Queries.Items[pos]
+		exists.Avg = (exists.Avg + query.Avg) / 2
+		exists.Count += query.Count
+
+		if exists.Min > query.Min {
+			exists.Min = query.Min
+		}
+
+		if exists.Max < query.Max {
+			exists.Max = query.Max
+		}
+
+		self.Queries.Items[pos] = exists
+
+		self.TopAvg.Add(exists)
+		self.TopCnt.Add(exists)
+	} else {
+		self.Queries.Items = append(self.Queries.Items, query)
+		self.TopAvg.Add(query)
+		self.TopCnt.Add(query)
+	}
+}

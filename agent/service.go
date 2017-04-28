@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"mycap/libs"
 	"mycap/libs/jsonrpc"
 )
 
@@ -14,6 +15,9 @@ func (self *Service) InitHandler() {
 		switch request.Method {
 		case "GetQueries":
 			return self.collector.queries, nil
+		case "ClearQueries":
+			self.collector.queries = libs.Queries{}
+			return true, nil
 		default:
 			return nil, nil
 		}

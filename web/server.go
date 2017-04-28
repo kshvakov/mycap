@@ -56,7 +56,7 @@ func (self *Server) StartWebServer() {
 func (self *Server) HandlerDashboard(w http.ResponseWriter, r *http.Request) {
 	content := new(bytes.Buffer)
 	self.templates.ExecuteTemplate(content, "view/queries/all", map[string]interface{}{
-		"queries": self.QueriesCollector.queries.Queries,
+		"queries": self.QueriesCollector.queries.Queries.Items,
 	})
 
 	self.templates.ExecuteTemplate(w, "layout/main", map[string]interface{}{
@@ -80,7 +80,7 @@ func (self *Server) HandlerAllNodes(w http.ResponseWriter, r *http.Request) {
 func (self *Server) HandlerAllQueries(w http.ResponseWriter, r *http.Request) {
 	content := new(bytes.Buffer)
 	self.templates.ExecuteTemplate(content, "view/queries/all", map[string]interface{}{
-		"queries": self.QueriesCollector.queries.Queries,
+		"queries": self.QueriesCollector.queries.Queries.Items,
 	})
 
 	self.templates.ExecuteTemplate(w, "layout/main", map[string]interface{}{
@@ -94,7 +94,7 @@ func (self *Server) HandlerTopByAvg(w http.ResponseWriter, r *http.Request) {
 
 	content := new(bytes.Buffer)
 	self.templates.ExecuteTemplate(content, "view/queries/top-by-avg", map[string]interface{}{
-		"queries": self.QueriesCollector.queries.TopAvg,
+		"queries": self.QueriesCollector.queries.TopAvg.Items,
 	})
 
 	self.templates.ExecuteTemplate(w, "layout/main", map[string]interface{}{
@@ -108,7 +108,7 @@ func (self *Server) HandlerTopByCount(w http.ResponseWriter, r *http.Request) {
 
 	content := new(bytes.Buffer)
 	self.templates.ExecuteTemplate(content, "view/queries/top-by-count", map[string]interface{}{
-		"queries": self.QueriesCollector.queries.TopCnt,
+		"queries": self.QueriesCollector.queries.TopCnt.Items,
 	})
 
 	self.templates.ExecuteTemplate(w, "layout/main", map[string]interface{}{

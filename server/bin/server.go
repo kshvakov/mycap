@@ -16,6 +16,10 @@ func main() {
 	flag.Parse()
 
 	srv := &server.Server{}
+
+	srv.Collector.Queries.TopAvg.MaxItems = 15
+	srv.Collector.Queries.TopCnt.MaxItems = 15
+
 	srv.Service.Host = *serviceHost
 	srv.Service.Port = *servicePort
 	srv.Agents.CreateFromJsonFile(*nodesFile)

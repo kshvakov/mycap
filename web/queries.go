@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"mycap/libs/agrqueries"
 	"mycap/libs/client"
 	"time"
@@ -9,7 +8,7 @@ import (
 
 type QueriesCollector struct {
 	server  *Server
-	queries agrqueries.Queries
+	queries agrqueries.QueriesAgregated
 }
 
 func (self *QueriesCollector) Collect() {
@@ -17,23 +16,13 @@ func (self *QueriesCollector) Collect() {
 	cli.Host = self.server.HeadServerHost
 	cli.Port = self.server.HeadServerPort
 
-	self.queries = agrqueries.Queries{}
-
 	for {
 		queries, err := cli.GetQueries()
 
 		if err == nil && queries.Error.Code == 0 {
-			for _, query := range queries.Result {
-
-				self.queries.Add(agrqueries.CreateQuery(
-					fmt.Sprintf("%s", query.SrcIP),
-					fmt.Sprintf("%s:%d", query.DstIP, query.DstPort),
-					query.Query,
-					query.Duration,
-				))
-			}
+			self.queries = queries.Result
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(time.Second)
 	}
 }

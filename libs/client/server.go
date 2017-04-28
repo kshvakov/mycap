@@ -2,7 +2,7 @@ package client
 
 import (
 	"mycap/agent"
-	"mycap/libs"
+	"mycap/libs/agrqueries"
 	"mycap/libs/jsonrpc"
 )
 
@@ -12,12 +12,12 @@ type ServerClient struct {
 
 type GetQueriesFromServerResponse struct {
 	jsonrpc.JsonRpcResponse
-	Result map[string]libs.Query `json:"result"`
+	Result agrqueries.QueriesAgregated `json:"result"`
 }
 
 type GetAgentsFromServerResponse struct {
 	jsonrpc.JsonRpcResponse
-	Result map[string]agent.Agent `json:"result"`
+	Result agent.Agents `json:"result"`
 }
 
 func (self *ServerClient) GetQueries() (GetQueriesFromServerResponse, error) {

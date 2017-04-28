@@ -2,9 +2,10 @@ package agrqueries
 
 import "sort"
 
-type QueriesTopByAvg []Query
-
-const MAX_BY_AVG = 30
+type QueriesTopByAvg struct {
+	Queries
+	MaxItems int
+}
 
 func (self *QueriesTopByAvg) SortAsc() {
 	sort.Sort(self)
@@ -14,36 +15,21 @@ func (self *QueriesTopByAvg) SortDesc() {
 	sort.Sort(sort.Reverse(self))
 }
 
-func (self *QueriesTopByAvg) Add(q Query) {
-	if i := self.FindByQuery(q); i != -1 {
-		(*self)[i].Avg = q.Avg
-	} else if len(*self) < MAX_BY_AVG {
-		(*self) = append((*self), q)
+func (self *QueriesTopByAvg) Add(query Query) {
+	if i := self.Find(query); i != -1 {
+		self.Items[i].Avg = query.Avg
+	} else if self.MaxItems > 0 && self.Len() < self.MaxItems {
+		self.Items = append(self.Items, query)
+	} else if self.Len() == 0 {
+		self.Items = append(self.Items, query)
 	} else {
 		self.SortAsc()
-		if (*self)[0].Avg < q.Avg {
-			(*self)[0] = q
+		if self.Items[0].Avg < query.Avg {
+			self.Items[0] = query
 		}
 	}
-}
-
-func (self QueriesTopByAvg) Len() int {
-	return len(self)
 }
 
 func (self QueriesTopByAvg) Less(i, j int) bool {
-	return self[i].Avg < self[j].Avg
-}
-
-func (self QueriesTopByAvg) Swap(i, j int) {
-	self[i], self[j] = self[j], self[i]
-}
-
-func (self QueriesTopByAvg) FindByQuery(fnd Query) (res int) {
-	for res, q := range self {
-		if q.Hash == fnd.Hash {
-			return res
-		}
-	}
-	return -1
+	return self.Items[i].Avg < self.Items[j].Avg
 }
