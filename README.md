@@ -2,27 +2,49 @@
 The MySql network traffic analyzer
 
 
-## Ubuntu
+## Prepare to install
+
+### Ubuntu
 ```
 sudo apt-get install libpcap-dev
-
-git clone https://github.com/kshvakov/mycap.git && cd mycap
-
-go build --ldflags '-extldflags "-static" -s' 
-
-sudo ./mycap -bpf_filter "tcp and port 3306"
 ```
 
-## Mac OS
+## Build project
 ```
-git clone https://github.com/kshvakov/mycap.git && cd mycap
+cd $GOPATH/src/
 
-go build --ldflags '-extldflags -s' 
+git clone https://github.com/kshvakov/mycap.git
+cd $GOPATH/src/mycap/
 
-sudo ./mycap -device utun1 -bpf_filter "tcp and port 3306"
+chmod +x ./build.sh && ./build.sh
 ```
 
+## Run project
 
-## WebUI
+### Run agent
 
-After start daemon it's possible to open web interface at http://localhost:8080/
+Agent parse trafic on network device and collect mysql queries.
+You can change settings in file agent.sh
+
+```
+cd $GOPATH/src/mycap/bin/ && chmod +x ./agent.sh && sudo ./agent.sh
+```
+
+### Run server
+
+Server collect queries from agents by json-rpc protocol.
+Now it's possible to collect queries from one agent.
+You can change settings in file server.sh
+```
+cd $GOPATH/src/mycap/bin/ && chmod +x ./server.sh && ./server.sh
+```
+
+### Run web interface
+Web app gets queries from server and draw them.
+You can change settings in file web.sh
+
+```
+cd $GOPATH/src/mycap/bin/ && chmod +x ./web.sh && ./web.sh
+```
+
+By default web it's possible to open web interface at http://localhost:9700/
