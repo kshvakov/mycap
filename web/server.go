@@ -2,9 +2,11 @@ package web
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
+	"mycap/libs/agrqueries/countpertime"
 	"net/http"
 )
 
@@ -34,8 +36,35 @@ func (self *Server) StartQueriesCollector() {
 	self.QueriesCollector.Collect()
 }
 
+type PlotItem [2]interface{}
+type PlotData []PlotItem
+
 func (self *Server) InitTemplates() {
-	if tpl, err := template.ParseGlob(self.PathTemplates + "/*.html"); err == nil {
+
+	funcMap := template.FuncMap{
+		"plot": func(counter countpertime.Counter) template.JS {
+			result := make(PlotData, len(counter.Items))
+			for key, val := range counter.Items {
+
+				// t := time.Unix(counter.TimeZero+int64(key), 0).Format("15:04:05")
+				// fmt.Println("key:", key, "time: ", t, counter.TimeZero, counter.TimeZero+int64(key))
+				// result[key] = PlotItem{t, val}
+				result[key] = PlotItem{1000 * (counter.TimeZero + int64(key)), val}
+			}
+
+			if result_js, err := json.Marshal(result); err == nil {
+				return template.JS(result_js)
+			} else {
+				log.Println(err)
+				return template.JS("")
+			}
+		},
+	}
+
+	tpl := template.New("asd")
+	tpl.Funcs(funcMap)
+
+	if _, err := tpl.ParseGlob(self.PathTemplates + "/*.html"); err == nil {
 		self.templates = tpl
 	} else {
 		log.Fatal(err)
@@ -48,6 +77,8 @@ func (self *Server) StartWebServer() {
 	http.HandleFunc("/all-queries", self.HandlerAllQueries)
 	http.HandleFunc("/top-by-avg", self.HandlerTopByAvg)
 	http.HandleFunc("/top-by-count", self.HandlerTopByCount)
+
+	http.HandleFunc("/counter-queries-per-time", self.CounterQueriesPerTimeAjax)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(self.PathStatic))))
 	http.ListenAndServe(fmt.Sprintf("%s:%d", self.Host, self.Port), nil)
@@ -69,6 +100,12 @@ func (self *Server) HandlerDashboard(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (self *Server) CounterQueriesPerTimeAjax(w http.ResponseWriter, r *http.Request) {
+	self.templates.ExecuteTemplate(w, "view/queries/count-per-time", map[string]interface{}{
+		"countPerTime": self.QueriesCollector.countPerTime,
+	})
+}
+
 func (self *Server) HandlerAllNodes(w http.ResponseWriter, r *http.Request) {
 	content := new(bytes.Buffer)
 
@@ -84,6 +121,7 @@ func (self *Server) HandlerAllNodes(w http.ResponseWriter, r *http.Request) {
 
 func (self *Server) HandlerAllQueries(w http.ResponseWriter, r *http.Request) {
 	content := new(bytes.Buffer)
+
 	self.templates.ExecuteTemplate(content, "view/queries/all", map[string]interface{}{
 		"queries": self.QueriesCollector.queries.Queries.Items,
 	})
