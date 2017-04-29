@@ -95,8 +95,7 @@ func (self *Server) HandlerDashboard(w http.ResponseWriter, r *http.Request) {
 	})
 
 	self.templates.ExecuteTemplate(w, "layout/main", map[string]interface{}{
-		"pageTitle": "Dashboard",
-		"content":   template.HTML(content.String()),
+		"content": template.HTML(content.String()),
 	})
 }
 
