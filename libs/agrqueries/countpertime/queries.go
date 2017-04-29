@@ -16,7 +16,10 @@ type Counter struct {
 func (self *Counter) Init(stepSize int64, stepCount int64) {
 	self.StepSize = stepSize
 	self.StepCount = stepCount
-	self.TimeZero = self.StepSize * (time.Now().Unix() / self.StepSize)
+
+	self.TimeZero = time.Now().Unix() - self.StepCount*self.StepSize
+	self.TimeZero = self.StepSize * (self.TimeZero / self.StepSize)
+
 	self.TimeMax = self.TimeZero + (self.StepSize * self.StepCount)
 
 	self.Items = make([]int64, self.StepCount+1, self.StepCount+1)

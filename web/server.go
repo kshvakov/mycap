@@ -45,11 +45,7 @@ func (self *Server) InitTemplates() {
 		"plot": func(counter countpertime.Counter) template.JS {
 			result := make(PlotData, len(counter.Items))
 			for key, val := range counter.Items {
-
-				// t := time.Unix(counter.TimeZero+int64(key), 0).Format("15:04:05")
-				// fmt.Println("key:", key, "time: ", t, counter.TimeZero, counter.TimeZero+int64(key))
-				// result[key] = PlotItem{t, val}
-				result[key] = PlotItem{1000 * (counter.TimeZero + int64(key)), val}
+				result[key] = PlotItem{1000 * (counter.TimeZero + (int64(key) * counter.StepSize)), val}
 			}
 
 			if result_js, err := json.Marshal(result); err == nil {
