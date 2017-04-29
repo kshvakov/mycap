@@ -1,6 +1,7 @@
 #!/bin/bash
 
-nodes_file="../nodes.json"
+#nodes_file="../nodes.json"
+nodes_file="../nodes-single.json"
 
 service_host="localhost"
 service_port=9600

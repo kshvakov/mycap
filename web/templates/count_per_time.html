@@ -1,0 +1,130 @@
+{{define "view/queries/count-per-time"}}
+
+<!-- Page-Level Plugin Scripts - Flot -->
+<!--[if lte IE 8]><script src="js/excanvas.min.js"></script><![endif]-->
+<script src="/static/bower_components/flot/jquery.flot.js"></script>
+<script src="/static/bower_components/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+<script src="/static/bower_components/flot/jquery.flot.resize.js"></script>
+<script src="/static/bower_components/flot/jquery.flot.pie.js"></script>
+<script src="/static/bower_components/flot/jquery.flot.time.js"></script>
+
+<div class="row">
+	<div class="col-sm-6">
+		<div class="panel panel-default">
+				<div class="panel-heading">
+						Количество запросов в секунду
+				</div>
+				<div class="panel-body">
+						<div class="flot-chart">
+								<div class="flot-chart-content" id="counter-queries-per-sec"></div>
+						</div>
+				</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="panel panel-default">
+				<div class="panel-heading">
+						Количество запросов в минуту
+				</div>
+				<div class="panel-body">
+						<div class="flot-chart">
+								<div class="flot-chart-content" id="counter-queries-per-min"></div>
+						</div>
+				</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-sm-6">
+		<div class="panel panel-default">
+				<div class="panel-heading">
+						Количество запросов в час
+				</div>
+				<div class="panel-body">
+						<div class="flot-chart">
+								<div class="flot-chart-content" id="counter-queries-per-hour"></div>
+						</div>
+				</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="panel panel-default">
+				<div class="panel-heading">
+						Количество запросов в день
+				</div>
+				<div class="panel-body">
+						<div class="flot-chart">
+								<div class="flot-chart-content" id="counter-queries-per-day"></div>
+						</div>
+				</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+
+		var barData = {
+				data: [
+					{{ range $key, $count := .countPerTime.PerSec.Items }}
+					['{{$key}}', '{{$count}}'],
+					{{end}}
+				]
+		};
+		$.plot($("#counter-queries-per-sec"), [barData], {
+				tooltip: true,
+				tooltipOpts: {
+						content: "x: %x, y: %y"
+				}}
+		);
+
+			var barData = {
+					data: [
+						{{ range $key, $count := .countPerTime.PerMin.Items }}
+						['{{$key}}', '{{$count}}'],
+						{{end}}
+					]
+			};
+			$.plot($("#counter-queries-per-min"), [barData], {
+					tooltip: true,
+					tooltipOpts: {
+							content: "x: %x, y: %y"
+					}}
+			);
+
+	var barData = {
+			data: [
+				{{ range $key, $count := .countPerTime.PerHour.Items }}
+				['{{$key}}', '{{$count}}'],
+				{{end}}
+			]
+	};
+	$.plot($("#counter-queries-per-hour"), [barData], {
+			tooltip: true,
+			tooltipOpts: {
+					content: "x: %x, y: %y"
+			}}
+	);
+
+	var barData = {
+			data: [
+				{{ range $key, $count := .countPerTime.PerDay.Items }}
+				['{{$key}}', '{{$count}}'],
+				{{end}}
+			]
+	};
+	$.plot($("#counter-queries-per-day"), [barData], {
+			tooltip: true,
+			tooltipOpts: {
+					content: "x: %x, y: %y"
+			}}
+	);
+
+});
+
+</script>
+
+{{end}}

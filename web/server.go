@@ -55,6 +55,10 @@ func (self *Server) StartWebServer() {
 
 func (self *Server) HandlerDashboard(w http.ResponseWriter, r *http.Request) {
 	content := new(bytes.Buffer)
+	self.templates.ExecuteTemplate(content, "view/queries/count-per-time", map[string]interface{}{
+		"countPerTime": self.QueriesCollector.countPerTime,
+	})
+
 	self.templates.ExecuteTemplate(content, "view/queries/all", map[string]interface{}{
 		"queries": self.QueriesCollector.queries.Queries.Items,
 	})
@@ -67,6 +71,7 @@ func (self *Server) HandlerDashboard(w http.ResponseWriter, r *http.Request) {
 
 func (self *Server) HandlerAllNodes(w http.ResponseWriter, r *http.Request) {
 	content := new(bytes.Buffer)
+
 	self.templates.ExecuteTemplate(content, "view/nodes/all", map[string]interface{}{
 		"nodes": self.AgentsCollector.agents,
 	})
