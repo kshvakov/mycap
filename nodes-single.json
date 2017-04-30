@@ -1,9 +1,0 @@
-[
-  {
-    "id" : "localhost.9500",
-    "service" : {
-      "host": "localhost",
-      "port": 9500
-    }
-  }
-]

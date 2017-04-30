@@ -11,19 +11,19 @@ import (
 )
 
 type Server struct {
-	Host string
-	Port int
+	Host string `json:"host"`
+	Port int    `json:"port"`
 
-	HeadServerHost string
-	HeadServerPort int
-
-	PathTemplates string
-	PathStatic    string
+	PathTemplates string `json:"path_templates"`
+	PathStatic    string `json:"path_static"`
 
 	templates *template.Template
 
-	AgentsCollector  AgentsCollector
-	QueriesCollector QueriesCollector
+	AgentsCollector  AgentsCollector  `json:"agents_collector"`
+	QueriesCollector QueriesCollector `json:"queries_collector"`
+
+	HeadServerHost string `json:"server_host"`
+	HeadServerPort int    `json:"server_port"`
 }
 
 func (self *Server) StartAgentsCollector() {

@@ -1,27 +1,9 @@
 package server
 
-import (
-	"encoding/json"
-	"io/ioutil"
-	"log"
-	"mycap/agent"
-)
+import "mycap/agent"
 
 type Agents struct {
-	Items agent.Agents
-}
-
-func (self *Agents) CreateFromJsonFile(agentsFile string) {
-	self.Items = agent.Agents{}
-	content, err := ioutil.ReadFile(agentsFile)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := json.Unmarshal(content, &self.Items); err != nil {
-		log.Fatal(err)
-	}
+	Items agent.Agents `json:"items"`
 }
 
 func (self *Agents) GetAgents() agent.Agents {

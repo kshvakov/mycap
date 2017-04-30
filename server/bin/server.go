@@ -2,27 +2,22 @@ package main
 
 import (
 	"flag"
+	"log"
+	"mycap/libs/config"
 	"mycap/server"
 	"time"
 )
 
-var (
-	nodesFile   = flag.String("nodes_file", "", "")
-	serviceHost = flag.String("service_host", "localhost", "")
-	servicePort = flag.Int("service_port", 9600, "")
-)
+var configFile = flag.String("config", "./../etc/server.json", "")
 
 func main() {
 	flag.Parse()
 
 	srv := &server.Server{}
 
-	srv.Collector.Queries.TopAvg.MaxItems = 15
-	srv.Collector.Queries.TopCnt.MaxItems = 15
-
-	srv.Service.Host = *serviceHost
-	srv.Service.Port = *servicePort
-	srv.Agents.CreateFromJsonFile(*nodesFile)
+	if err := config.ReadConfig(*configFile, &srv); err != nil {
+		log.Fatal(err)
+	}
 
 	go srv.StartJsonRpcServer()
 	go srv.StartCollector()

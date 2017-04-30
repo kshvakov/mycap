@@ -1,9 +1,9 @@
 package server
 
 type Server struct {
-	Service   Service
-	Collector Collector
-	Agents    Agents
+	Service   Service   `json:"service"`
+	Collector Collector `json:"collector"`
+	Agents    Agents    `json:"agents"`
 }
 
 func (self *Server) StartJsonRpcServer() {

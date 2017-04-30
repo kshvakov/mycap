@@ -2,36 +2,23 @@ package main
 
 import (
 	"flag"
-	"html/template"
+	"log"
+	"mycap/libs/config"
 	"mycap/web"
 	"time"
 )
 
-var (
-	tpl *template.Template
-
-	webPath = flag.String("web_path", "localhost", "")
-
-	serverHost = flag.String("server_host", "localhost", "")
-	serverPort = flag.Int("server_port", 9600, "")
-
-	serviceHost = flag.String("service_host", "localhost", "")
-	servicePort = flag.Int("service_port", 9700, "")
-)
+var configFile = flag.String("config", "./../etc/web.json", "")
 
 func main() {
 	flag.Parse()
 
-	s := web.Server{
-		Host: *serviceHost,
-		Port: *servicePort,
+	s := web.Server{}
 
-		HeadServerHost: *serverHost,
-		HeadServerPort: *serverPort,
+	if err := config.ReadConfig(*configFile, &s); err != nil {
+		log.Fatal(err)
 	}
 
-	s.PathTemplates = *webPath + "/templates/"
-	s.PathStatic = *webPath + "/static/"
 	s.InitTemplates()
 
 	go s.StartAgentsCollector()

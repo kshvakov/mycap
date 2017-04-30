@@ -1,0 +1,17 @@
+{
+  "id" : "localhost.agent",
+
+  "collector" : {
+    "device" : "lo0",
+
+    "bpf_filter" : "tcp and port 3306",
+    "txt_filter" : "",
+
+    "max_query_len" : 9192
+  },
+
+  "service" : {
+    "host" : "localhost",
+    "port" : 9500
+  }
+}
