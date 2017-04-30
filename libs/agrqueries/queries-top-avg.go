@@ -4,7 +4,7 @@ import "sort"
 
 type QueriesTopByAvg struct {
 	Queries
-	MaxItems int
+	MaxItems int `json:"max_items"`
 }
 
 func (self *QueriesTopByAvg) SortAsc() {

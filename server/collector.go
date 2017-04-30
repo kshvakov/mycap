@@ -9,7 +9,7 @@ import (
 )
 
 type Collector struct {
-	Queries      agrqueries.QueriesAgregated
+	Queries      agrqueries.QueriesAgregated `json:"queries"`
 	CountPerTime countpertime.Counters
 
 	server *Server

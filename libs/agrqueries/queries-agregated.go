@@ -1,9 +1,9 @@
 package agrqueries
 
 type QueriesAgregated struct {
-	Queries Queries
-	TopAvg  QueriesTopByAvg
-	TopCnt  QueriesTopByCount
+	Queries Queries           `json:"queries"`
+	TopAvg  QueriesTopByAvg   `json:"top_avg"`
+	TopCnt  QueriesTopByCount `json:"top_cnt"`
 }
 
 func (self *QueriesAgregated) Add(query Query) {
