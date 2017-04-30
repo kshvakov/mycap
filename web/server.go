@@ -8,6 +8,7 @@ import (
 	"log"
 	"mycap/libs/agrqueries/countpertime"
 	"net/http"
+	"time"
 )
 
 type Server struct {
@@ -44,8 +45,10 @@ func (self *Server) InitTemplates() {
 	funcMap := template.FuncMap{
 		"plot": func(counter countpertime.Counter) template.JS {
 			result := make(PlotData, len(counter.Items))
+			_, offset := time.Now().In(time.Local).Zone()
+
 			for key, val := range counter.Items {
-				result[key] = PlotItem{1000 * (counter.TimeZero + (int64(key) * counter.StepSize)), val}
+				result[key] = PlotItem{1000 * (counter.TimeZero + int64(offset) + (int64(key) * counter.StepSize)), val}
 			}
 
 			if result_js, err := json.Marshal(result); err == nil {
@@ -57,7 +60,7 @@ func (self *Server) InitTemplates() {
 		},
 	}
 
-	tpl := template.New("asd")
+	tpl := template.New("")
 	tpl.Funcs(funcMap)
 
 	if _, err := tpl.ParseGlob(self.PathTemplates + "/*.html"); err == nil {
