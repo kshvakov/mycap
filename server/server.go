@@ -1,22 +1,9 @@
 package server
 
-import (
-	"mycap/agent"
-	"mycap/libs"
-)
-
 type Server struct {
-	Service   Service
-	Collector Collector
-	Agents    Agents
-}
-
-func (self *Server) GetQueries() map[string]libs.Query {
-	return self.Collector.queries
-}
-
-func (self *Server) GetAgents() map[string]agent.Agent {
-	return self.Agents.GetAgents()
+	Service   Service   `json:"service"`
+	Collector Collector `json:"collector"`
+	Agents    Agents    `json:"agents"`
 }
 
 func (self *Server) StartJsonRpcServer() {

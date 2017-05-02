@@ -1,38 +1,22 @@
 package agrqueries
 
 type Queries struct {
-	Queries map[string]Query
-	TopAvg  QueriesTopByAvg
-	TopCnt  QueriesTopByCount
+	Items []Query
 }
 
-func (self *Queries) Add(query Query) {
-	if self.Queries == nil {
-		self.Queries = make(map[string]Query)
-	}
-
-	if len(query.Query) < 1 {
-		return
-	}
-
-	if exists, ok := self.Queries[query.GetHash()]; ok {
-		exists.Avg = (exists.Avg + query.Avg) / 2
-		exists.Count += query.Count
-
-		if exists.Min > query.Min {
-			exists.Min = query.Min
+func (self *Queries) Find(query Query) int {
+	for key, val := range self.Items {
+		if val.Hash == query.Hash {
+			return key
 		}
-
-		if exists.Max < query.Max {
-			exists.Max = query.Max
-		}
-
-		self.Queries[query.GetHash()] = exists
-		self.TopAvg.Add(exists)
-		self.TopCnt.Add(exists)
-	} else {
-		self.Queries[query.GetHash()] = query
-		self.TopAvg.Add(query)
-		self.TopCnt.Add(query)
 	}
+	return -1
+}
+
+func (self Queries) Len() int {
+	return len(self.Items)
+}
+
+func (self Queries) Swap(i, j int) {
+	self.Items[i], self.Items[j] = self.Items[j], self.Items[i]
 }

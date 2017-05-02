@@ -2,7 +2,8 @@ package client
 
 import (
 	"mycap/agent"
-	"mycap/libs"
+	"mycap/libs/agrqueries"
+	"mycap/libs/agrqueries/countpertime"
 	"mycap/libs/jsonrpc"
 )
 
@@ -12,12 +13,7 @@ type ServerClient struct {
 
 type GetQueriesFromServerResponse struct {
 	jsonrpc.JsonRpcResponse
-	Result map[string]libs.Query `json:"result"`
-}
-
-type GetAgentsFromServerResponse struct {
-	jsonrpc.JsonRpcResponse
-	Result map[string]agent.Agent `json:"result"`
+	Result agrqueries.QueriesAgregated `json:"result"`
 }
 
 func (self *ServerClient) GetQueries() (GetQueriesFromServerResponse, error) {
@@ -25,6 +21,23 @@ func (self *ServerClient) GetQueries() (GetQueriesFromServerResponse, error) {
 	err := self.Call("GetQueries", nil, &res)
 
 	return res, err
+}
+
+type GetCountPerTimeFromServerResponse struct {
+	jsonrpc.JsonRpcResponse
+	Result countpertime.Counters `json:"result"`
+}
+
+func (self *ServerClient) GetCountPerTime() (GetCountPerTimeFromServerResponse, error) {
+	res := GetCountPerTimeFromServerResponse{}
+	err := self.Call("GetCountPerTime", nil, &res)
+
+	return res, err
+}
+
+type GetAgentsFromServerResponse struct {
+	jsonrpc.JsonRpcResponse
+	Result agent.Agents `json:"result"`
 }
 
 func (self *ServerClient) GetAgents() (GetAgentsFromServerResponse, error) {

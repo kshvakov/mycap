@@ -1,5 +1,7 @@
 package agent
 
+type Agents []Agent
+
 type Agent struct {
 	Id string `json:"id"`
 

@@ -1,0 +1,27 @@
+{
+  "service" : {
+    "host" : "localhost",
+    "port" : 9600
+  },
+  "collector" : {
+    "queries" : {
+      "top_avg" : {
+        "max_items" : 15
+      },
+      "top_cnt" : {
+        "max_items" : 15
+      }
+    }
+  },
+  "agents" : {
+    "items" : [
+      {
+        "id" : "localhost.9500",
+        "service" : {
+          "host": "localhost",
+          "port": 9500
+        }
+      }
+    ]
+  }
+}

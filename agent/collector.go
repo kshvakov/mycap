@@ -21,12 +21,11 @@ type Collector struct {
 	MaxQueryLen int `json:"max_query_len"`
 
 	buffer  map[string]libs.Query
-	queries map[string]libs.Query
+	queries libs.Queries
 }
 
 func (self *Collector) Collect() {
 
-	self.queries = make(map[string]libs.Query)
 	self.buffer = make(map[string]libs.Query)
 
 	handle, err := pcap.OpenLive(self.Device, int32(self.MaxQueryLen)+5, true, time.Second)
@@ -99,7 +98,7 @@ func (self *Collector) Collect() {
 					query.Duration = packet.Metadata().Timestamp.Sub(query.Start)
 					query.WithResponse = true
 
-					self.queries[query.ID] = query
+					self.queries = append(self.queries, query)
 					delete(self.buffer, ID)
 				}
 			}

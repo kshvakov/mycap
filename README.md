@@ -21,30 +21,44 @@ chmod +x ./build.sh && ./build.sh
 
 ## Run project
 
-### Run agent
-
-Agent parse trafic on network device and collect mysql queries.
-You can change settings in file agent.sh
-
+### Start daemons
 ```
-cd $GOPATH/src/mycap/bin/ && chmod +x ./agent.sh && sudo ./agent.sh
+cd $GOPATH/src/mycap/bin/
+
+sudo ./tool -process=agent -command start
+sudo ./tool -process=server -command start
+sudo ./tool -process=web -command start
 ```
 
-### Run server
+### Stop daemons
+```
+cd $GOPATH/src/mycap/bin/
 
+sudo ./tool -process=agent -command stop
+sudo ./tool -process=server -command stop
+sudo ./tool -process=web -command stop
+```
+
+### Restart daemons
+```
+cd $GOPATH/src/mycap/bin/
+
+sudo ./tool -process=agent -command restart
+sudo ./tool -process=server -command restart
+sudo ./tool -process=web -command restart
+```
+
+## Configuration
+All configuration located in ./etc/ folder
+
+## Project structure
+
+### Agent
+Agent app parse traffic on network device and collect mysql queries.
+
+### Server
 Server collect queries from agents by json-rpc protocol.
-Now it's possible to collect queries from one agent.
-You can change settings in file server.sh
-```
-cd $GOPATH/src/mycap/bin/ && chmod +x ./server.sh && ./server.sh
-```
 
-### Run web interface
+### Web
 Web app gets queries from server and draw them.
-You can change settings in file web.sh
-
-```
-cd $GOPATH/src/mycap/bin/ && chmod +x ./web.sh && ./web.sh
-```
-
 By default web it's possible to open web interface at http://localhost:9700/

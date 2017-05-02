@@ -2,9 +2,10 @@ package agrqueries
 
 import "sort"
 
-type QueriesTopByCount []Query
-
-const MAX_BY_CNT = 30
+type QueriesTopByCount struct {
+	Queries
+	MaxItems int `json:"max_items"`
+}
 
 func (self *QueriesTopByCount) SortAsc() {
 	sort.Sort(self)
@@ -14,36 +15,21 @@ func (self *QueriesTopByCount) SortDesc() {
 	sort.Sort(sort.Reverse(self))
 }
 
-func (self *QueriesTopByCount) Add(q Query) {
-	if i := self.FindByQuery(q); i != -1 {
-		(*self)[i].Count = q.Count
-	} else if len(*self) < MAX_BY_CNT {
-		(*self) = append((*self), q)
+func (self *QueriesTopByCount) Add(query Query) {
+	if i := self.Find(query); i != -1 {
+		self.Items[i].Count = query.Count
+	} else if self.MaxItems > 0 && self.Len() < self.MaxItems {
+		self.Items = append(self.Items, query)
+	} else if self.Len() == 0 {
+		self.Items = append(self.Items, query)
 	} else {
 		self.SortAsc()
-		if (*self)[0].Count < q.Count {
-			(*self)[0] = q
+		if self.Items[0].Count < query.Count {
+			self.Items[0] = query
 		}
 	}
-}
-
-func (self QueriesTopByCount) Len() int {
-	return len(self)
 }
 
 func (self QueriesTopByCount) Less(i, j int) bool {
-	return self[i].Count < self[j].Count
-}
-
-func (self QueriesTopByCount) Swap(i, j int) {
-	self[i], self[j] = self[j], self[i]
-}
-
-func (self QueriesTopByCount) FindByQuery(fnd Query) (res int) {
-	for res, q := range self {
-		if q.Hash == fnd.Hash {
-			return res
-		}
-	}
-	return -1
+	return self.Items[i].Count < self.Items[j].Count
 }

@@ -11,12 +11,24 @@ type AgentClient struct {
 
 type GetQueriesFromAgentResponse struct {
 	jsonrpc.JsonRpcResponse
-	Result map[string]libs.Query `json:"result"`
+	Result libs.Queries `json:"result"`
+}
+
+type ClearQueriesFromAgentResponse struct {
+	jsonrpc.JsonRpcResponse
+	Result bool `json:"result"`
 }
 
 func (self *AgentClient) GetQueries() (GetQueriesFromAgentResponse, error) {
 	res := GetQueriesFromAgentResponse{}
 	err := self.Call("GetQueries", nil, &res)
+
+	return res, err
+}
+
+func (self *AgentClient) ClearQueries() (ClearQueriesFromAgentResponse, error) {
+	res := ClearQueriesFromAgentResponse{}
+	err := self.Call("ClearQueries", nil, &res)
 
 	return res, err
 }

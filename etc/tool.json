@@ -1,0 +1,21 @@
+{
+  "processes" : {
+    "agent" : {
+      "config" : "./../etc/agent.json",
+  		"exec"   : "./agent",
+  		"pidf"   : "/var/run/mycap-agent.pid"
+    },
+
+    "server" : {
+      "config" : "./../etc/server.json",
+  		"exec"   : "./server",
+  		"pidf"   : "/var/run/mycap-server.pid"
+    },
+
+    "web" : {
+      "config" : "./../etc/web.json",
+  		"exec"   : "./web",
+  		"pidf"   : "/var/run/mycap-web.pid"
+    }
+  }
+}

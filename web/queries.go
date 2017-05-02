@@ -1,15 +1,16 @@
 package web
 
 import (
-	"fmt"
 	"mycap/libs/agrqueries"
+	"mycap/libs/agrqueries/countpertime"
 	"mycap/libs/client"
 	"time"
 )
 
 type QueriesCollector struct {
-	server  *Server
-	queries agrqueries.Queries
+	server       *Server
+	queries      agrqueries.QueriesAgregated
+	countPerTime countpertime.Counters
 }
 
 func (self *QueriesCollector) Collect() {
@@ -17,23 +18,23 @@ func (self *QueriesCollector) Collect() {
 	cli.Host = self.server.HeadServerHost
 	cli.Port = self.server.HeadServerPort
 
-	self.queries = agrqueries.Queries{}
-
 	for {
-		queries, err := cli.GetQueries()
+		func() {
+			response, err := cli.GetQueries()
 
-		if err == nil && queries.Error.Code == 0 {
-			for _, query := range queries.Result {
-
-				self.queries.Add(agrqueries.CreateQuery(
-					fmt.Sprintf("%s", query.SrcIP),
-					fmt.Sprintf("%s:%d", query.DstIP, query.DstPort),
-					query.Query,
-					query.Duration,
-				))
+			if err == nil && response.Error.Code == 0 {
+				self.queries = response.Result
 			}
-		}
+		}()
 
-		time.Sleep(1 * time.Second)
+		func() {
+			response, err := cli.GetCountPerTime()
+
+			if err == nil && response.Error.Code == 0 {
+				self.countPerTime = response.Result
+			}
+		}()
+
+		time.Sleep(time.Second)
 	}
 }

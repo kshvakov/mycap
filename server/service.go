@@ -13,9 +13,11 @@ func (self *Service) InitHandler() {
 	self.SetHandler(func(request jsonrpc.JsonRpcRequest) (interface{}, error) {
 		switch request.Method {
 		case "GetQueries":
-			return self.server.GetQueries(), nil
+			return self.server.Collector.Queries, nil
+		case "GetCountPerTime":
+			return self.server.Collector.CountPerTime, nil
 		case "GetAgents":
-			return self.server.GetAgents(), nil
+			return self.server.Agents.Items, nil
 		default:
 			return nil, nil
 		}

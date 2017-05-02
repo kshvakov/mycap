@@ -1,0 +1,10 @@
+{
+  "host" : "localhost",
+  "port" : 9700,
+
+  "path_templates" : "./../web/templates/",
+  "path_static" : "./../web/static/",
+
+  "server_host" : "localhost",
+  "server_port" : 9600
+}

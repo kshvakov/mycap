@@ -8,7 +8,7 @@ import (
 
 type AgentsCollector struct {
 	server *Server
-	agents map[string]agent.Agent
+	agents agent.Agents
 }
 
 func (self *AgentsCollector) Collect() {
